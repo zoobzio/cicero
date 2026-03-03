@@ -6,7 +6,7 @@ The workflow governing how agents collaborate on zoobzio applications.
 
 | Agent | Role | Responsibility |
 |-------|------|----------------|
-| Zidgel | Captain | Defines requirements, controls build traffic, reviews for satisfaction, expands scope on RFC, monitors PR comments |
+| Zidgel | Captain | Defines requirements, architects the task board, monitors build progress, reviews for satisfaction, expands scope on RFC, monitors PR comments |
 | Fidgel | Science Officer | Architects solutions, builds pipelines and internal packages, diagnoses problems, reviews for technical quality, monitors workflows, documents |
 | Midgel | First Mate | Implements solutions, maintains godocs, manages git workflow |
 | Kevin | Engineer | Tests and verifies quality |
@@ -59,45 +59,81 @@ Plan is complete when both agree on:
 - How it will be done (architecture/spec)
 - How we know it's done (acceptance criteria)
 
+Before Plan closes, Zidgel creates the task board for the Build phase. The board captures:
+- Every mechanical chunk from Midgel's execution plan as a build task
+- Every pipeline stage from Fidgel's prerequisites as a build task
+- A corresponding test task for each build task, blocked by the build task it validates
+- Dependencies between tasks (e.g., pipeline stages blocked by their mechanical prerequisites)
+- A "scope locked" task that Zidgel marks complete to signal that the board is final
+
+The board is the execution contract. Builders and Kevin work from the board, not from messages.
+
 Issue label: `phase:plan`
 
 ### Build (Midgel <-> Kevin, Fidgel on call)
 
-Build begins when Midgel breaks the spec into an execution plan — discrete, isolated chunks of mechanical work that can each be implemented and tested independently. Midgel posts this plan as a comment on the issue. Fidgel identifies what mechanical prerequisites his pipeline work needs and what pipeline stages he will build in `internal/`.
+Build begins when Zidgel marks the "scope locked" task complete on the board. This signals that all build and test tasks are created, dependencies are set, and builders may begin claiming work.
 
-Zidgel is the traffic controller during Build. He tracks which chunks are ready, which are being tested, and which are blocked. All workflow transitions route through him.
+Midgel posts his execution plan as a comment on the issue. Fidgel identifies his pipeline stages. Both confirm the board reflects their planned work. If the board is missing tasks or has incorrect dependencies, they message Zidgel to correct it.
+
+The task board is the source of truth during Build. Task status IS the handoff. No messages are needed for routine workflow transitions.
+
+**Task board protocol:**
+
+Each agent checks the board (TaskList) to find their next work. An agent claims a task by setting themselves as owner (TaskUpdate with owner). When the work is done, the agent marks the task complete (TaskUpdate with status: completed). Downstream tasks that were blocked by the completed task become unblocked automatically.
+
+Agents do not wait for assignments. They self-serve from the board.
 
 **Mechanical work (Midgel):**
 
-1. Midgel builds chunks at his own pace
-2. When a chunk is ready, Midgel reports to Zidgel: "Chunk N ready for testing"
-3. Between chunks, Midgel checks in with Zidgel: "Chunk N done. Does Kevin need help before I continue?"
-4. Zidgel responds immediately — continue, pause, or fix a reported bug
-5. If Kevin reports a bug, Midgel stops and fixes it before building on top
+1. Midgel checks the board for unblocked, unowned build tasks in his domain
+2. Midgel claims a task (sets owner to his name)
+3. Midgel builds the chunk
+4. Midgel marks the task complete — this unblocks the corresponding test task
+5. Midgel checks the board for the next available task and repeats
 
 **Pipeline work (Fidgel):**
 
-1. Fidgel cannot start pipeline work until his mechanical prerequisites are available
-2. When prerequisites are ready, Fidgel begins building in `internal/`
-3. When a pipeline stage is ready, Fidgel reports to Zidgel: "Stage N ready for testing"
-4. Fidgel checks in with Zidgel between stages
-5. If Kevin reports a bug, Fidgel stops and fixes it before building on top
+1. Fidgel checks the board for unblocked, unowned pipeline tasks
+2. Fidgel claims a task (sets owner to his name)
+3. Fidgel builds the pipeline stage
+4. Fidgel marks the task complete — this unblocks the corresponding test task
+5. Fidgel checks the board for the next available task and repeats
 
 **Testing (Kevin):**
 
-1. When Kevin finishes testing a chunk or stage, he tells Zidgel: "Done testing X. What's next?"
-2. Zidgel routes Kevin to the next priority item — could be Midgel's chunk or Fidgel's pipeline stage
-3. Kevin reports bugs directly to the builder (Midgel or Fidgel) and notifies Zidgel
+1. Kevin checks the board for unblocked, unowned test tasks
+2. Kevin claims a test task (sets owner to his name)
+3. Kevin verifies the code builds, reads it, writes tests, runs tests
+4. If tests pass: Kevin marks the test task complete
+5. If Kevin finds a bug: Kevin creates a bug task (see Bug Protocol below), links it as a blocker on subsequent work, and messages the responsible builder with the details
+6. Kevin checks the board for the next available test task and repeats
 
-**Traffic control (Zidgel):**
+**Board monitoring (Zidgel):**
 
-1. Zidgel tracks all chunks and stages across both builders
-2. When a builder reports ready, Zidgel acknowledges and queues it
-3. When Kevin asks for work, Zidgel assigns the highest-priority testable item
-4. If Kevin is falling behind, Zidgel tells builders to pace themselves
-5. If Kevin has capacity, Zidgel tells builders to continue
+1. Zidgel monitors the board periodically via TaskList
+2. Zidgel intervenes when:
+   - A task is stuck (owned but not progressing) — messages the owner
+   - Priority conflict — reorders by updating dependencies
+   - Kevin is falling behind — messages builders to pace themselves
+   - A blocker emerges that no agent has noticed — messages affected agents
+3. Zidgel does not assign routine work — agents self-serve
+4. Zidgel handles scope RFCs as before
 
-When all mechanical chunks and pipeline stages are implemented and Kevin confirms all tests pass, Midgel runs the full test suite independently to verify. If tests fail for Midgel that passed for Kevin, there is a defect — Kevin and Midgel resolve it before proceeding. Once both confirm tests pass, Kevin posts a test summary comment on the issue and transitions the issue to Review.
+**Bug protocol:**
+
+When Kevin finds a bug:
+
+1. Kevin creates a bug task: subject describes the defect, description includes what was tested, expected vs actual, and which build task produced the faulty code
+2. Kevin sets the bug task to block downstream tasks that depend on the fix
+3. Kevin marks his current test task as blocked by the bug task (via TaskUpdate with addBlockedBy)
+4. Kevin messages the responsible builder with the bug details (messages are still used for context that doesn't fit in a task description)
+5. The builder claims the bug task, fixes the defect, and marks the bug task complete
+6. Kevin's test task unblocks, and Kevin re-tests
+
+**Build completion:**
+
+Build is complete when all build and test tasks on the board are marked complete. Kevin verifies this by checking TaskList. Midgel runs the full test suite independently. If tests fail for Midgel that passed for Kevin, there is a defect — Kevin and Midgel resolve it using the bug protocol. Once both confirm tests pass, Kevin posts a test summary comment on the issue and transitions the issue to Review.
 
 Fidgel remains available as a diagnostic consultant for Midgel throughout Build. Zidgel handles scope RFCs — any agent can flag that the issue needs expansion.
 
@@ -185,7 +221,7 @@ All workflows pass. All PR comments resolved. PR approved and merged. Issue clos
 
 Regression is not failure. Finding an architectural flaw in Build and returning to Plan is the workflow working correctly.
 
-When a phase transition occurs, the agent who triggers it updates the issue label and notifies the affected agents.
+When a phase transition occurs, the agent who triggers it updates the issue label. During Build, the board state itself signals readiness — no notification messages are required for routine transitions. For regressions (e.g., Build -> Plan, Review -> Build), the triggering agent messages affected agents with context, because regressions carry nuance that a task status cannot convey.
 
 ## Escalation Paths
 
@@ -241,18 +277,49 @@ Phase labels are updated on every transition. Escalation labels are added when t
 
 ## Communication Protocol
 
-Agents communicate via direct messages. There are no silent handoffs.
+### Task Board (Build Phase Coordination)
 
-### Within a Phase
+During Build, the task board is the source of truth for workflow state. Task status changes ARE the handoffs. Agents check the board to discover available work, claim tasks by setting ownership, and signal completion by updating status.
 
-Phase partners message each other directly. During Build, workflow transitions route through Zidgel — builders report ready chunks to Zidgel, Kevin requests assignments from Zidgel. Direct communication between builders and Kevin remains for questions, collaboration, and problem-solving. Zidgel and Fidgel iterate on plans and reviews.
+The board replaces:
+- "Chunk N ready for testing" messages (task completion unblocks the test task)
+- "What's next?" messages (check the board)
+- "Done testing X" messages (test task marked complete)
+- Zidgel routing Kevin (Kevin self-serves from unblocked test tasks)
+- Builder check-ins with Zidgel (board state is visible to all)
+
+### Messages (Discussion and Escalation)
+
+Messages are for communication that carries nuance, context, or judgment — things that do not fit in a task status field.
+
+**Messages are still used for:**
+- Briefing discussion (pre-board, entirely conversational)
+- Bug context (Kevin messages the builder with details beyond what the bug task captures)
+- Architectural questions (Midgel or Kevin escalating to Fidgel)
+- Scope RFCs (any agent to Zidgel)
+- Phase regressions (the triggering agent explains why)
+- Rewrite coordination (Midgel telling Kevin to stop testing a module)
+- Pace concerns (Zidgel telling builders to slow down or speed up)
+- Stuck agent intervention (Zidgel noticing a task isn't progressing)
+- Review discussion (Zidgel and Fidgel sharing findings)
+- PR triage (Zidgel and Fidgel deciding how to handle comments)
+- Anything requiring explanation, debate, or judgment
+
+**Messages are NOT used for:**
+- Reporting routine task completion (update the board)
+- Requesting next assignment (check the board)
+- Acknowledging receipt of work (claim the task)
+- Confirming handoffs (task status is the confirmation)
+- Status updates that the board already reflects
 
 ### Across Phases
 
-The agents who trigger a transition notify the agents entering the next phase with:
+The agents who trigger a phase transition notify the agents entering the next phase with:
 - Summary of current state
 - What's ready
 - Any concerns or context
+
+Phase transitions are rare and carry context. Messages remain appropriate here.
 
 ### Escalations
 
@@ -264,6 +331,62 @@ Escalations include:
 Responses include:
 - Diagnosis of the core issue
 - Decided path (guidance, spec update, or phase regression)
+
+## Task Board Protocol
+
+The task board (TaskCreate, TaskUpdate, TaskList, TaskGet) is the coordination mechanism during Build. All four agents interact with it.
+
+### Task Types
+
+| Type | Created By | Owned By | Blocked By |
+|------|-----------|----------|------------|
+| Scope locked | Zidgel | Zidgel | Nothing — first task completed |
+| Build (mechanical) | Zidgel | Midgel (claimed) | Scope locked; other build tasks if dependent |
+| Build (pipeline) | Zidgel | Fidgel (claimed) | Scope locked; mechanical prerequisites |
+| Test | Zidgel | Kevin (claimed) | Corresponding build task |
+| Bug | Kevin | Builder (claimed) | Nothing — created on discovery |
+
+### Task Lifecycle
+
+`pending (unowned)` -> `in_progress (claimed by owner)` -> `completed`
+
+1. **Pending, unblocked, unowned** — available for claiming
+2. **Pending, blocked** — waiting on dependencies; not yet claimable
+3. **In progress** — agent has claimed it and is working
+4. **Completed** — work is done; downstream tasks unblock
+
+### Task Naming Convention
+
+- Build tasks: `build: <chunk description>`
+- Pipeline tasks: `pipeline: <stage description>`
+- Test tasks: `test: <what is being tested>`
+- Bug tasks: `bug: <defect summary>`
+- Scope locked: `scope locked`
+
+### Board Construction (Plan Phase)
+
+Zidgel creates the board at the end of Plan, using information from:
+- Midgel's execution plan (mechanical chunks)
+- Fidgel's pipeline stage plan (pipeline prerequisites and stages)
+
+For each build chunk or pipeline stage:
+1. Create a build task with subject and description
+2. Create a corresponding test task
+3. Set the test task as blocked by the build task (addBlockedBy)
+4. Set inter-build dependencies where they exist
+
+All build and test tasks are initially blocked by the "scope locked" task. Zidgel marks "scope locked" complete to release the board for work.
+
+### Claiming Protocol
+
+1. Check TaskList for tasks that are: pending, unblocked (no blockedBy), and unowned
+2. Claim by calling TaskUpdate with your name as owner and status as in_progress
+3. If two agents claim the same task, the second claim will see it already owned — check TaskList again and claim a different task
+4. Prefer tasks in ID order (lowest first) when multiple are available
+
+### Board Visibility
+
+All agents can see the full board at any time via TaskList. This replaces Zidgel's mental model of "what's ready, what's being tested, what's blocked." The board is self-documenting. If you want to know the state of Build, read the board.
 
 ## ROCKHOPPER Protocol
 
@@ -365,7 +488,7 @@ An agent MUST stop working and escalate immediately when any of these conditions
 |-------|--------------------------|
 | Midgel | A spec from Fidgel. No spec = no code. Message Fidgel and wait. |
 | Kevin | Building source code from Midgel or Fidgel. No code = no tests. If `go build` fails, message the builder and wait. |
-| Fidgel | An issue with requirements (for architecture). No issue = no architecture. Message Zidgel and wait. Mechanical prerequisites from Midgel (for pipeline work). No prereqs = no pipeline code. Check with Zidgel on status. |
+| Fidgel | An issue with requirements (for architecture). No issue = no architecture. Message Zidgel and wait. Mechanical prerequisites from Midgel (for pipeline work). No prereqs = no pipeline code. Check the task board for status. |
 
 If the prerequisite doesn't exist, the agent does not improvise. The agent stops, messages the responsible party, and waits.
 
@@ -383,14 +506,18 @@ Agents MUST NOT edit files outside their domain. This is absolute.
 
 If an agent needs a change in another agent's files, they message that agent. They do not make the change themselves.
 
-### Handoff Confirmation
+### Task Board Handoffs (Build Phase)
 
-During Build, handoffs route through Zidgel as traffic controller:
+During Build, the task board replaces message-based handoffs:
 
-1. Builder reports chunk/stage ready → Zidgel acknowledges and queues it
-2. Kevin requests next task → Zidgel assigns the highest-priority item
-3. Kevin reports completion → Zidgel updates tracking
-4. Kevin reports bug → directly to the builder who produced the chunk + Zidgel
+1. Builder marks build task complete → corresponding test task unblocks automatically
+2. Kevin checks the board for unblocked test tasks → claims one
+3. Kevin marks test task complete → downstream work unblocks
+4. Kevin finds a bug → creates bug task, links dependencies, messages the builder with context
+
+No acknowledgment messages needed. Task state is the acknowledgment.
+
+### Direct Handoffs (Outside Build)
 
 Outside Build, the direct handoff protocol applies:
 

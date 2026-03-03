@@ -11,9 +11,9 @@ Get oriented before contributing to this application.
 ## Do This
 
 - Follow the workflow: issue -> architect -> implement -> test -> review
+- Use the task board during Build — claim tasks, mark them complete, check for available work
 - Use skills for standardized work
 - Post neutral, professional GitHub comments
-- Hand off clearly between stages
 - Stay in your domain
 
 ## Don't Do This
@@ -31,5 +31,6 @@ Once you've read the files, you understand:
 - The mission of this application
 - How zoobzio works
 - Your role in the workflow
+- The task board drives Build coordination; messages are for discussion
 
 Proceed.
