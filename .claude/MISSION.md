@@ -1,10 +1,36 @@
-# Mission: sumatra
+# Mission: cicero
 
-Application template for zoobzio Go services.
+Cost-intelligent translation pipeline for the zoobz.io ecosystem.
 
 ## Purpose
 
-Provide a complete, ready-to-use foundation for new Go applications. Clone it, rename it, start building.
+Translate text content by classifying complexity and routing to the appropriate provider. Straightforward content goes to a self-hosted translation service. Nuanced content escalates to an LLM. Translations are stored and deduplicated by content hash.
+
+## Core Concepts
+
+### Complexity Classification
+
+A deterministic algorithm evaluates incoming text against criteria and thresholds. Certain signals trigger automatic LLM escalation (e.g., markdown content). Others are evaluated quantitatively (content length, structural markers). The classifier produces a routing decision.
+
+### Dual-Provider Routing
+
+Self-hosted sidecar for bulk translations (infra cost). LLM for nuanced content.
+
+### Content-Addressable Storage
+
+Source text is hashed. The hash is returned to the caller and used for retrieval. One source record, many translation records — each for a different target language. Same source text from different callers produces the same hash. Existing translations are served, not re-translated.
+
+### Multi-Tenancy
+
+zoobz.io is the first customer. The API supports additional customers without structural changes.
+
+### Explicit Language Specification
+
+The caller specifies source and target language.
+
+## Translation Sidecar
+
+A self-hosted translation service running as a sidecar container. Part of this repository. Follows the same sidecar pattern established in vicky: separate service in `services/`, gRPC communication, client with resilience patterns in `external/`, docker-compose for local development.
 
 ## The Stack
 
@@ -22,12 +48,10 @@ Provide a complete, ready-to-use foundation for new Go applications. Clone it, r
 
 ## API Surfaces
 
-This template supports multiple API surfaces — separate binaries serving different consumers.
-
 | Surface | Binary | Consumer | Characteristics |
 |---------|--------|----------|-----------------|
-| `api` | `cmd/app/` | Customers | User-scoped, masked data, conservative exposure |
-| `admin` | `cmd/admin/` | Internal team | System-wide, full visibility, bulk operations |
+| `api` | `cmd/app/` | Customers | Tenant-scoped, submit translations, retrieve by hash |
+| `admin` | `cmd/admin/` | Internal team | Cross-tenant visibility, provider management, usage metrics |
 
 ### Layer Organization
 
@@ -49,11 +73,11 @@ This template supports multiple API surfaces — separate binaries serving diffe
 | Aspect | Public (api/) | Admin (admin/) |
 |--------|---------------|----------------|
 | Auth | Customer identity | Admin/internal identity |
-| Scope | User's own data | System-wide access |
-| Operations | Standard CRUD | Bulk ops, impersonation, audit |
+| Scope | Tenant's own data | System-wide access |
+| Operations | Submit translations, retrieve by hash | Bulk ops, provider management, audit |
 | Data exposure | Masked, minimal | Full visibility |
 
-Note: Stores are shared. The same store implementation satisfies both `api/contracts.Users` and `admin/contracts.Users`.
+Note: Stores are shared. The same store implementation satisfies both `api/contracts` and `admin/contracts` interfaces.
 
 ## Project Structure
 
@@ -84,6 +108,14 @@ admin/
 ├── wire/             # Admin request/response types (unmasked)
 ├── handlers/         # Admin HTTP handlers
 └── transformers/     # Admin model <-> wire mapping
+
+# Translation sidecar
+services/
+└── translator/       # Self-hosted translation service
+
+# Sidecar client
+external/
+└── translator/       # gRPC client with resilience patterns
 ```
 
 ## Conventions
@@ -92,11 +124,11 @@ admin/
 
 | Layer | File | Type | Example |
 |-------|------|------|---------|
-| Model | `models/user.go` | `User` (singular) | `type User struct` |
-| Store | `stores/users.go` | `Users` (plural struct) | `type Users struct` |
-| Contract | `{surface}/contracts/users.go` | `Users` (plural interface) | `type Users interface` |
-| Wire | `{surface}/wire/users.go` | Singular + suffix | `UserResponse`, `AdminUserResponse` |
-| Handler | `{surface}/handlers/users.go` | Verb+Singular | `var GetUser`, `var CreateUser` |
+| Model | `models/source.go` | `Source` (singular) | `type Source struct` |
+| Store | `stores/sources.go` | `Sources` (plural struct) | `type Sources struct` |
+| Contract | `{surface}/contracts/sources.go` | `Sources` (plural interface) | `type Sources interface` |
+| Wire | `{surface}/wire/sources.go` | Singular + suffix | `SourceResponse` |
+| Handler | `{surface}/handlers/sources.go` | Verb+Singular | `var GetSource`, `var CreateSource` |
 
 ### Registration Points
 
@@ -113,22 +145,13 @@ After creating artifacts, wire them appropriately:
 
 ### Testing
 
-- 1:1 relationship: `user.go` -> `user_test.go`
+- 1:1 relationship: `source.go` -> `source_test.go`
 - Helpers in `testing/` call `t.Helper()`
 - Mocks use function-field pattern
 - Fixtures return test data with sensible defaults
 
-## Success Criteria
-
-A developer can:
-1. Create a new repo from this template
-2. Update MISSION.md and go.mod with their service name
-3. Run `make check` successfully
-4. Define their first entity using skills
-5. Start building their application immediately
-
 ## Non-Goals
 
-- Library infrastructure (that's samoa)
-- Opinionated business patterns
-- Pre-configured cloud integrations
+- Language detection or auto-identification
+- Translation memory or fuzzy matching
+- Training or fine-tuning translation models

@@ -1,4 +1,4 @@
-module github.com/zoobzio/sumatra
+module github.com/zoobzio/cicero
 
 go 1.25.0
 
@@ -27,15 +27,18 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.2 // indirect
 	github.com/jmoiron/sqlx v1.4.0 // indirect
+	github.com/lib/pq v1.11.2 // indirect
 	github.com/zoobzio/astql v1.0.6 // indirect
 	github.com/zoobzio/atom v1.0.0 // indirect
 	github.com/zoobzio/cereal v0.1.1 // indirect
 	github.com/zoobzio/check v0.0.4 // indirect
+	github.com/zoobzio/clockz v1.0.0 // indirect
 	github.com/zoobzio/dbml v1.0.0 // indirect
 	github.com/zoobzio/edamame v1.0.1 // indirect
 	github.com/zoobzio/fig v0.0.1 // indirect
 	github.com/zoobzio/grub v0.1.8 // indirect
 	github.com/zoobzio/openapi v1.0.1 // indirect
+	github.com/zoobzio/pipz v1.0.4 // indirect
 	github.com/zoobzio/rocco v0.1.14 // indirect
 	github.com/zoobzio/scio v0.0.3 // indirect
 	github.com/zoobzio/sentinel v1.0.2 // indirect

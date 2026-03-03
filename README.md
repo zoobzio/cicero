@@ -1,38 +1,55 @@
-# Sumatra
+# Cicero
 
-A template repository for building Go applications with the zoobzio framework.
+Cost-intelligent translation pipeline for the zoobz.io ecosystem.
 
 ## Overview
 
-Sumatra provides a production-ready project structure built on [sum](https://github.com/zoobzio/sum), following patterns established in real-world applications. It includes:
+Cicero translates text content by classifying complexity and routing to the appropriate provider. Straightforward content goes to a self-hosted translation sidecar. Nuanced content escalates to an LLM. Translations are stored and deduplicated by content hash.
 
-- Type-safe service registry via sum
-- HTTP server with OpenAPI support via rocco
-- Database access patterns via grub/astql
-- Configuration management via fig
-- Event system via capitan
-- Comprehensive testing infrastructure
+- **Content-addressable storage** — source text is hashed (SHA-256, truncated to 32 hex chars). The hash is returned to the caller and used for retrieval. Same text from different callers produces the same hash.
+- **Dual-provider routing** — a complexity classifier determines whether text routes to the sidecar (bulk, infrastructure cost) or an LLM (nuanced, per-request cost).
+- **Multi-tenancy** — the API supports multiple customers without structural changes.
+- **Explicit language specification** — the caller specifies source and target language.
 
 ## Project Structure
 
 ```
-sumatra/
-├── cmd/app/          # Application entrypoint
-├── config/           # Configuration types
-├── contracts/        # Interface definitions
-├── models/           # Domain models
-├── stores/           # Data access implementations
-├── handlers/         # HTTP handlers
-├── wire/             # Request/response types
-├── transformers/     # Model ↔ Wire mapping
-├── events/           # Event definitions
-├── testing/          # Test infrastructure
-├── internal/otel/    # OpenTelemetry setup
-├── migrations/       # SQL migrations
-└── .github/workflows # CI/CD
-```
+cmd/
+├── app/              # Public API binary
+└── admin/            # Admin API binary
 
-Each directory contains a README explaining its purpose and usage patterns.
+# Shared layers
+config/               # Configuration types
+models/               # Domain models
+stores/               # Data access (shared, satisfies multiple contracts)
+events/               # Domain events and signals
+migrations/           # Database migrations (goose)
+internal/             # Internal packages (pipeline, classifier)
+external/             # External service clients
+testing/              # Test infrastructure, mocks, fixtures
+
+# Public API surface
+api/
+├── contracts/        # Public interface definitions
+├── wire/             # Public request/response types
+├── handlers/         # Public HTTP handlers
+└── transformers/     # Public model <-> wire mapping
+
+# Admin API surface
+admin/
+├── contracts/        # Admin interface definitions
+├── wire/             # Admin request/response types
+├── handlers/         # Admin HTTP handlers
+└── transformers/     # Admin model <-> wire mapping
+
+# Translation sidecar
+services/
+└── translator/       # Self-hosted translation service
+
+# Sidecar client
+external/
+└── translator/       # Client with resilience patterns
+```
 
 ## Getting Started
 
@@ -57,7 +74,7 @@ make check
 
 ### Prerequisites
 
-- Go 1.24+
+- Go 1.25+
 - golangci-lint v2.7.2
 
 ### Install Tools
@@ -81,17 +98,34 @@ make install-hooks
 | `make coverage` | Generate coverage report |
 | `make check` | Run tests + lint |
 | `make ci` | Full CI simulation |
+| `make dev` | Start development environment (docker compose) |
+| `make dev-down` | Stop development environment |
+| `make dev-logs` | Tail application logs |
+| `make dev-reset` | Reset development environment (removes volumes) |
 
 ## Architecture
 
-The application follows a layered architecture with clear dependency rules:
+Cicero uses a dual API surface architecture with shared domain layers:
 
-1. **contracts** - Define interfaces, depend only on models
-2. **models** - Domain models, no internal dependencies
-3. **stores** - Implement contracts, depend on models
-4. **handlers** - HTTP layer, depend on contracts/wire/transformers
-5. **wire** - API types, depend on models (for transformation)
-6. **transformers** - Pure mapping functions between models and wire
+**Shared layers** (used by all surfaces):
+- **models** — Domain models, no internal dependencies
+- **stores** — Data access implementations (same store satisfies multiple contracts)
+- **migrations** — Database schema
+- **events** — Domain events and signals
+- **config** — Configuration types
+
+**Surface-specific layers** (each surface has its own):
+- **contracts** — Interface definitions
+- **wire** — Request/response types
+- **handlers** — HTTP layer
+- **transformers** — Pure mapping functions between models and wire
+
+**Internal packages:**
+- **internal/classify** — Text complexity classification
+- **internal/translate** — Translation pipeline (hash, deduplicate, classify, translate, store)
+
+**External clients:**
+- **external/translator** — Sidecar client with resilience stack (circuit breaker, backoff, timeout)
 
 ## License
 
