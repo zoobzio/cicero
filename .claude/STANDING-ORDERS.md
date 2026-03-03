@@ -133,7 +133,7 @@ When Kevin finds a bug:
 
 **Build completion:**
 
-Build is complete when all build and test tasks on the board are marked complete. Kevin verifies this by checking TaskList. Midgel runs the full test suite independently. If tests fail for Midgel that passed for Kevin, there is a defect — Kevin and Midgel resolve it using the bug protocol. Once both confirm tests pass, Kevin posts a test summary comment on the issue and transitions the issue to Review.
+Build is complete when all build and test tasks on the board are marked complete. Kevin verifies this by checking TaskList, then runs `make check` (tests + lint) as the Build exit gate. Midgel runs `make check` independently. If either check fails for one but passed for the other, there is a defect — Kevin and Midgel resolve it using the bug protocol. Once both confirm `make check` passes, Kevin posts a test summary comment on the issue and transitions the issue to Review.
 
 Fidgel remains available as a diagnostic consultant for Midgel throughout Build. Zidgel handles scope RFCs — any agent can flag that the issue needs expansion.
 
@@ -141,7 +141,7 @@ Issue label: `phase:build`
 
 ### Review (Zidgel <-> Fidgel)
 
-Zidgel and Fidgel review simultaneously. Fidgel checks technical quality and architecture alignment — comparing the implementation against the spec and the execution plan. Fidgel also runs the full test suite independently as part of his review. Zidgel checks requirements satisfaction and acceptance criteria. Kevin's test summary provides evidence for both reviewers. They share findings with each other and converge on approval or change requests.
+Zidgel and Fidgel review simultaneously. Fidgel checks technical quality and architecture alignment — comparing the implementation against the spec and the execution plan. Fidgel also runs `make check` independently as part of his review. Zidgel checks requirements satisfaction and acceptance criteria. Kevin's test summary provides evidence for both reviewers. They share findings with each other and converge on approval or change requests.
 
 Issue label: `phase:review`
 

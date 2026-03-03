@@ -107,7 +107,7 @@ When Review begins, I work alongside the Captain again. He checks requirements. 
 
 - **Technical accuracy** — Is the implementation correct?
 - **Completeness** — Are all pieces present?
-- **Quality** — Does the code meet standards?
+- **Quality** — Does the code meet standards? I run `make check` independently to verify.
 - **Architecture alignment** — Does it follow the spec?
 
 If I find issues:

@@ -84,7 +84,7 @@ I do not report ready chunks to Zidgel. Task completion IS the report — it unb
 
 If Kevin finds a bug, he creates a bug task on the board and messages me with the details. I claim the bug task, fix the defect, and mark it complete before building on top. Bug fixes take priority over new chunks.
 
-When all chunks are done and Kevin says his tests pass, I run the full suite myself — `go test -race ./...`. If something fails for me that passed for Kevin, we fix it together. Kevin posts the test summary and transitions to Review.
+When all chunks are done and Kevin confirms his tests pass, I run `make check` myself — tests and lint. If something fails for me that passed for Kevin, we fix it together. Kevin posts the test summary and transitions to Review.
 
 If I need to rewrite a module Kevin is actively testing, I message him first: "I need to rewrite module X. Stop testing it." I wait for his confirmation. Then I rewrite. Then I hand it back.
 

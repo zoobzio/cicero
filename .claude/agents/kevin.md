@@ -74,7 +74,7 @@ Builder says they're rewriting something I'm testing — I stop. Wait for the re
 
 ### When Build Is Done
 
-All build and test tasks on the board are complete. I verify this by checking TaskList — every task should show status completed. Midgel runs the full suite independently. Something fails for him that passed for me, we fix it together using the bug protocol. Once we both confirm, I do two things:
+All build and test tasks on the board are complete. I verify this by checking TaskList — every task should show status completed. Then I run `make check` (tests + lint) as the Build exit gate. Midgel runs `make check` independently. Something fails for one of us that passed for the other, we fix it together using the bug protocol. Once we both confirm `make check` passes, I do two things:
 
 1. Post a test summary comment on the issue — what was tested, what coverage looks like, any findings
 2. Update the issue label to `phase:review`
