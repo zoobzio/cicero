@@ -68,14 +68,14 @@ func (m *MockTranslations) Set(ctx context.Context, key string, translation *mod
 
 // MockTranslator is a mock implementation of api/contracts.Translator.
 type MockTranslator struct {
-	OnTranslate func(ctx context.Context, text, sourceLang, targetLang string) (string, error)
+	OnTranslate func(ctx context.Context, text, sourceLang, targetLang string, route models.Route) (string, string, error)
 }
 
-func (m *MockTranslator) Translate(ctx context.Context, text, sourceLang, targetLang string) (string, error) {
+func (m *MockTranslator) Translate(ctx context.Context, text, sourceLang, targetLang string, route models.Route) (string, string, error) {
 	if m.OnTranslate != nil {
-		return m.OnTranslate(ctx, text, sourceLang, targetLang)
+		return m.OnTranslate(ctx, text, sourceLang, targetLang, route)
 	}
-	return "", nil
+	return "", "", nil
 }
 
 // MockClassifier is a mock implementation of classify.Classifier.

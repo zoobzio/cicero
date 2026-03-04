@@ -42,13 +42,17 @@ admin/
 ├── handlers/         # Admin HTTP handlers
 └── transformers/     # Admin model <-> wire mapping
 
-# Translation sidecar
+# Proto definitions (separate Go submodule)
+proto/
+└── translator/       # TranslatorService gRPC contract
+
+# Translation sidecar (separate Go submodule)
 services/
-└── translator/       # Self-hosted translation service
+└── translator/       # Go gRPC server wrapping LibreTranslate
 
 # Sidecar client
 external/
-└── translator/       # Client with resilience patterns
+└── translator/       # gRPC client with pipz resilience
 ```
 
 ## Getting Started
@@ -76,6 +80,7 @@ make check
 
 - Go 1.25+
 - golangci-lint v2.7.2
+- protoc with protoc-gen-go and protoc-gen-go-grpc (for proto changes)
 
 ### Install Tools
 
@@ -124,8 +129,14 @@ Cicero uses a dual API surface architecture with shared domain layers:
 - **internal/classify** — Text complexity classification
 - **internal/translate** — Translation pipeline (hash, deduplicate, classify, translate, store)
 
+**Proto definitions:**
+- **proto/translator** — gRPC service contract for the translation sidecar (separate Go submodule)
+
+**Services:**
+- **services/translator** — Go gRPC server that wraps LibreTranslate, owns provider selection and error normalization (separate Go submodule)
+
 **External clients:**
-- **external/translator** — Sidecar client with resilience stack (circuit breaker, backoff, timeout)
+- **external/translator** — gRPC client with pipz resilience stack (circuit breaker, backoff, timeout)
 
 ## License
 

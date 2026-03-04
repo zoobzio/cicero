@@ -11,8 +11,8 @@ func TestTranslator_Validate(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "valid",
-			cfg:     Translator{Addr: "http://localhost:5000"},
+			name:    "valid host:port",
+			cfg:     Translator{Addr: "localhost:9091"},
 			wantErr: false,
 		},
 		{

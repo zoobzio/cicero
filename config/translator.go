@@ -2,9 +2,9 @@ package config
 
 import "github.com/zoobzio/check"
 
-// Translator holds configuration for the LibreTranslate sidecar client.
+// Translator holds configuration for the translator gRPC sidecar client.
 type Translator struct {
-	Addr string `env:"APP_TRANSLATOR_ADDR" default:"http://localhost:5000"`
+	Addr string `env:"APP_TRANSLATOR_ADDR" default:"localhost:9091"`
 }
 
 // Validate checks that the translator configuration is valid.

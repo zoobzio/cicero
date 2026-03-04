@@ -1,23 +1,34 @@
-// Package translator provides an HTTP client for the LibreTranslate sidecar.
+// Package translator provides a gRPC client for the translator sidecar.
 package translator
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
-	"net/http"
+	"sync"
 	"time"
 
+	"github.com/zoobzio/cicero/models"
+	pb "github.com/zoobzio/cicero/proto/translator"
 	"github.com/zoobzio/pipz"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+)
+
+// Resilience configuration.
+const (
+	translateTimeout          = 30 * time.Second
+	translateMaxAttempts      = 3
+	translateBackoffDelay     = 200 * time.Millisecond
+	translateFailureThreshold = 5
+	translateResetTimeout     = 30 * time.Second
 )
 
 // Pipeline identities for the resilience stack.
 var (
-	translateProcessorID = pipz.NewIdentity("translator.call", "HTTP call to LibreTranslate")
+	translateProcessorID = pipz.NewIdentity("translator.call", "gRPC call to translator sidecar")
 	translateTimeoutID   = pipz.NewIdentity("translator.timeout", "Timeout for translation calls")
 	translateBackoffID   = pipz.NewIdentity("translator.backoff", "Backoff retry for translation calls")
-	translateBreakerID   = pipz.NewIdentity("translator.breaker", "Circuit breaker for LibreTranslate")
+	translateBreakerID   = pipz.NewIdentity("translator.breaker", "Circuit breaker for translator sidecar")
 )
 
 // translateCall is the pipeline carrier for a single translation request.
@@ -25,109 +36,125 @@ type translateCall struct {
 	text       string
 	sourceLang string
 	targetLang string
+	route      models.Route
 	result     string
+	provider   string
 }
 
-// Clone returns a copy of the call carrier.
 func (c *translateCall) Clone() *translateCall {
 	clone := *c
 	return &clone
 }
 
-// translateRequest is the JSON body sent to LibreTranslate.
-type translateRequest struct {
-	Q      string `json:"q"`
-	Source string `json:"source"`
-	Target string `json:"target"`
-}
-
-// translateResponse is the JSON body returned by LibreTranslate on success.
-type translateResponse struct {
-	TranslatedText string `json:"translatedText"`
-}
-
-// translateErrorResponse is the JSON body returned by LibreTranslate on error.
-type translateErrorResponse struct {
-	Error string `json:"error"`
-}
-
-// Client calls the LibreTranslate REST API with a resilient pipeline.
-// The pipeline stacks CircuitBreaker -> Backoff -> Timeout -> HTTP Processor.
+// Client calls the translator gRPC sidecar with a resilient pipeline.
+// The pipeline stacks CircuitBreaker -> Backoff -> Timeout -> gRPC Processor.
 // Create one Client per service and reuse it — the circuit breaker is stateful.
 type Client struct {
 	pipeline pipz.Chainable[*translateCall]
-	httpAddr string
+	conn     *grpc.ClientConn
+	addr     string
+	mu       sync.Mutex
 }
 
-// NewClient creates a LibreTranslate client targeting the given address.
-// The addr should include scheme and host (e.g., "http://localhost:5000").
+// NewClient creates a translator gRPC client targeting the given address.
+// The addr should be a host:port string (e.g., "localhost:9091").
 func NewClient(addr string) *Client {
-	c := &Client{httpAddr: addr}
-
-	httpClient := &http.Client{}
-
-	processor := pipz.Apply(translateProcessorID, func(ctx context.Context, call *translateCall) (*translateCall, error) {
-		body, err := json.Marshal(translateRequest{
-			Q:      call.text,
-			Source: call.sourceLang,
-			Target: call.targetLang,
-		})
-		if err != nil {
-			return call, fmt.Errorf("marshal request: %w", err)
-		}
-
-		req, err := http.NewRequestWithContext(ctx, http.MethodPost, addr+"/translate", bytes.NewReader(body))
-		if err != nil {
-			return call, fmt.Errorf("create request: %w", err)
-		}
-		req.Header.Set("Content-Type", "application/json")
-
-		resp, err := httpClient.Do(req)
-		if err != nil {
-			return call, fmt.Errorf("http post: %w", err)
-		}
-		defer resp.Body.Close()
-
-		if resp.StatusCode != http.StatusOK {
-			var errResp translateErrorResponse
-			if jsonErr := json.NewDecoder(resp.Body).Decode(&errResp); jsonErr == nil && errResp.Error != "" {
-				return call, fmt.Errorf("libretranslate error: %s", errResp.Error)
-			}
-			return call, fmt.Errorf("unexpected status %d", resp.StatusCode)
-		}
-
-		var result translateResponse
-		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-			return call, fmt.Errorf("decode response: %w", err)
-		}
-
-		call.result = result.TranslatedText
-		return call, nil
-	})
-
-	withTimeout := pipz.NewTimeout(translateTimeoutID, processor, 30*time.Second)
-	withBackoff := pipz.NewBackoff(translateBackoffID, withTimeout, 3, 200*time.Millisecond)
-	withBreaker := pipz.NewCircuitBreaker(translateBreakerID, withBackoff, 5, 30*time.Second)
-
-	c.pipeline = withBreaker
+	c := &Client{addr: addr}
+	c.pipeline = c.buildPipeline()
 	return c
 }
 
-// Translate sends text to LibreTranslate and returns the translated string.
-func (c *Client) Translate(ctx context.Context, text, sourceLang, targetLang string) (string, error) {
+// buildPipeline constructs the resilient gRPC processing pipeline.
+func (c *Client) buildPipeline() pipz.Chainable[*translateCall] {
+	processor := pipz.Apply(translateProcessorID, c.doTranslate)
+
+	return pipz.NewCircuitBreaker(translateBreakerID,
+		pipz.NewBackoff(translateBackoffID,
+			pipz.NewTimeout(translateTimeoutID, processor, translateTimeout),
+			translateMaxAttempts, translateBackoffDelay,
+		),
+		translateFailureThreshold, translateResetTimeout,
+	)
+}
+
+// doTranslate performs the actual gRPC call to the translator sidecar.
+func (c *Client) doTranslate(ctx context.Context, call *translateCall) (*translateCall, error) {
+	client, err := c.dial()
+	if err != nil {
+		return call, err
+	}
+
+	res, err := client.Translate(ctx, &pb.TranslateRequest{
+		Text:           call.text,
+		SourceLanguage: call.sourceLang,
+		TargetLanguage: call.targetLang,
+		Route:          string(call.route),
+	})
+	if err != nil {
+		return call, fmt.Errorf("translator: %w", err)
+	}
+
+	call.result = res.TranslatedText
+	call.provider = res.Provider
+	return call, nil
+}
+
+// dial lazily establishes a gRPC connection to the translator sidecar.
+func (c *Client) dial() (pb.TranslatorServiceClient, error) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	if c.conn != nil {
+		return pb.NewTranslatorServiceClient(c.conn), nil
+	}
+
+	conn, err := grpc.NewClient(c.addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, fmt.Errorf("dial translator at %s: %w", c.addr, err)
+	}
+
+	c.conn = conn
+	return pb.NewTranslatorServiceClient(conn), nil
+}
+
+// Translate sends text to the translator sidecar and returns the translated string
+// and the provider name that handled the request.
+func (c *Client) Translate(ctx context.Context, text, sourceLang, targetLang string, route models.Route) (result string, provider string, err error) {
 	call := &translateCall{
 		text:       text,
 		sourceLang: sourceLang,
 		targetLang: targetLang,
+		route:      route,
 	}
-	result, err := c.pipeline.Process(ctx, call)
+	out, err := c.pipeline.Process(ctx, call)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
-	return result.result, nil
+	return out.result, out.provider, nil
 }
 
-// Close shuts down the resilience pipeline.
+// Close shuts down the gRPC connection and resilience pipeline.
 func (c *Client) Close() error {
-	return c.pipeline.Close()
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	var errs []error
+
+	if c.pipeline != nil {
+		if err := c.pipeline.Close(); err != nil {
+			errs = append(errs, err)
+		}
+	}
+
+	if c.conn != nil {
+		if err := c.conn.Close(); err != nil {
+			errs = append(errs, err)
+		}
+		c.conn = nil
+	}
+
+	if len(errs) > 0 {
+		return errs[0]
+	}
+	return nil
 }

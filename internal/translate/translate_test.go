@@ -15,8 +15,8 @@ import (
 
 func TestTranslateStage_Success(t *testing.T) {
 	mt := &mockTranslator{
-		translate: func(_ context.Context, _, _, _ string) (string, error) {
-			return "¡Hola, mundo!", nil
+		translate: func(_ context.Context, _, _, _ string, _ models.Route) (string, string, error) {
+			return "¡Hola, mundo!", "sidecar", nil
 		},
 	}
 
@@ -47,9 +47,9 @@ func TestTranslateStage_Success(t *testing.T) {
 func TestTranslateStage_SkipsWhenExistingSet(t *testing.T) {
 	callCount := 0
 	mt := &mockTranslator{
-		translate: func(_ context.Context, _, _, _ string) (string, error) {
+		translate: func(_ context.Context, _, _, _ string, _ models.Route) (string, string, error) {
 			callCount++
-			return "should not be called", nil
+			return "should not be called", "", nil
 		},
 	}
 
@@ -88,12 +88,49 @@ func TestTranslateStage_SkipsWhenExistingSet(t *testing.T) {
 	}
 }
 
+func TestTranslateStage_RouteForwardedToTranslator(t *testing.T) {
+	var capturedRoute models.Route
+
+	mt := &mockTranslator{
+		translate: func(_ context.Context, _, _, _ string, route models.Route) (string, string, error) {
+			capturedRoute = route
+			return "Hola", "llm", nil
+		},
+	}
+
+	sum.Reset()
+	k := sum.Start()
+	sum.Register[contracts.Translator](k, mt)
+	sum.Freeze(k)
+	t.Cleanup(sum.Reset)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	t.Cleanup(cancel)
+
+	job := &Job{
+		SourceText:     "Complex text",
+		SourceLang:     "en",
+		TargetLang:     "es",
+		Classification: models.Classification{Route: models.RouteComplex},
+	}
+
+	result, err := translateStage(ctx, job)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if capturedRoute != models.RouteComplex {
+		t.Errorf("route forwarded: got %q, want %q", capturedRoute, models.RouteComplex)
+	}
+	if result.Provider != "llm" {
+		t.Errorf("Provider: got %q, want %q", result.Provider, "llm")
+	}
+}
+
 func TestTranslateStage_TranslatorError_ReturnsError(t *testing.T) {
 	translateErr := errors.New("sidecar unavailable")
 
 	mt := &mockTranslator{
-		translate: func(_ context.Context, _, _, _ string) (string, error) {
-			return "", translateErr
+		translate: func(_ context.Context, _, _, _ string, _ models.Route) (string, string, error) {
+			return "", "", translateErr
 		},
 	}
 

@@ -35,7 +35,7 @@ services:
   # Translation Sidecar
   # =============================================================================
 
-  translator:
+  libretranslate:
     image: libretranslate/libretranslate:latest
     environment:
       LT_LOAD_ONLY: "en,es,fr,de,pt,it,nl,pl,ru,zh,ja,ko"
@@ -47,6 +47,24 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+
+  translator:
+    build:
+      context: .
+      dockerfile: services/translator/Dockerfile
+    depends_on:
+      libretranslate:
+        condition: service_healthy
+    environment:
+      TRANSLATOR_LISTEN_ADDR: ":9091"
+      LIBRETRANSLATE_ADDR: "http://libretranslate:5000"
+    ports:
+      - "9091:9091"
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 9091 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # =============================================================================
   # Observability Stack
@@ -130,7 +148,7 @@ services:
       APP_DB_USER: cicero
       APP_DB_PASSWORD: cicero
       APP_DB_SSLMODE: disable
-      APP_TRANSLATOR_ADDR: http://translator:5000
+      APP_TRANSLATOR_ADDR: translator:9091
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       OTEL_SERVICE_NAME: cicero
     ports:

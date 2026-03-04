@@ -1,4 +1,4 @@
-.PHONY: build run test test-unit test-integration test-bench lint lint-fix coverage clean help check ci install-tools install-hooks dev dev-down dev-logs dev-reset
+.PHONY: build run test test-unit test-integration test-bench lint lint-fix coverage clean help check ci install-tools install-hooks dev dev-down dev-logs dev-reset proto
 
 .DEFAULT_GOAL := help
 
@@ -94,9 +94,21 @@ clean: ## Remove generated files
 	@find . -name "*.prof" -delete
 	@find . -name "*.out" -delete
 
+proto: ## Regenerate protobuf Go code
+	@protoc \
+		--go_out=proto \
+		--go_opt=paths=source_relative \
+		--go-grpc_out=proto \
+		--go-grpc_opt=paths=source_relative \
+		-I proto \
+		proto/translator/translator.proto
+	@echo "Proto generation complete."
+
 install-tools: ## Install development tools
 	@go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.7.2
 	@go install github.com/air-verse/air@latest
+	@go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+	@go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
 install-hooks: ## Install git pre-commit hook
 	@mkdir -p .git/hooks

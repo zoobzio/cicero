@@ -32,8 +32,8 @@ func TestPipeline_NewTranslation_EndToEnd(t *testing.T) {
 	ms := &mockSources{}
 	mt := &mockTranslations{} // returns nil, nil — no existing translation
 	mtr := &mockTranslator{
-		translate: func(_ context.Context, _, _, _ string) (string, error) {
-			return "¡Hola, mundo!", nil
+		translate: func(_ context.Context, _, _, _ string, _ models.Route) (string, string, error) {
+			return "¡Hola, mundo!", "sidecar", nil
 		},
 	}
 	mc := &mockClassifier{}
@@ -105,9 +105,9 @@ func TestPipeline_DedupHit_TranslatorNotCalled(t *testing.T) {
 
 	translatorCalled := false
 	mtr := &mockTranslator{
-		translate: func(_ context.Context, _, _, _ string) (string, error) {
+		translate: func(_ context.Context, _, _, _ string, _ models.Route) (string, string, error) {
 			translatorCalled = true
-			return "should not be returned", nil
+			return "should not be returned", "", nil
 		},
 	}
 	mc := &mockClassifier{}
@@ -145,8 +145,8 @@ func TestPipeline_TranslatorError_PipelineFails(t *testing.T) {
 	ms := &mockSources{}
 	mt := &mockTranslations{} // no existing translation
 	mtr := &mockTranslator{
-		translate: func(_ context.Context, _, _, _ string) (string, error) {
-			return "", context.DeadlineExceeded
+		translate: func(_ context.Context, _, _, _ string, _ models.Route) (string, string, error) {
+			return "", "", context.DeadlineExceeded
 		},
 	}
 	mc := &mockClassifier{}

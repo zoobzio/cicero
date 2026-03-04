@@ -30,14 +30,14 @@ func (m *mockSources) Set(ctx context.Context, hash string, source *models.Sourc
 
 // mockTranslator is a local minimal mock for contracts.Translator.
 type mockTranslator struct {
-	translate func(ctx context.Context, text, sourceLang, targetLang string) (string, error)
+	translate func(ctx context.Context, text, sourceLang, targetLang string, route models.Route) (string, string, error)
 }
 
-func (m *mockTranslator) Translate(ctx context.Context, text, sourceLang, targetLang string) (string, error) {
+func (m *mockTranslator) Translate(ctx context.Context, text, sourceLang, targetLang string, route models.Route) (string, string, error) {
 	if m.translate != nil {
-		return m.translate(ctx, text, sourceLang, targetLang)
+		return m.translate(ctx, text, sourceLang, targetLang, route)
 	}
-	return "", nil
+	return "", "", nil
 }
 
 // mockClassifier is a local minimal mock for classify.Classifier.

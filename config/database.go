@@ -9,11 +9,11 @@ import (
 // Database holds PostgreSQL connection configuration.
 type Database struct {
 	Host     string `env:"APP_DB_HOST" default:"localhost"`
-	Port     int    `env:"APP_DB_PORT" default:"5432"`
 	Name     string `env:"APP_DB_NAME" default:"cicero"`
 	User     string `env:"APP_DB_USER" default:"cicero"`
 	Password string `env:"APP_DB_PASSWORD" default:"cicero"`
 	SSLMode  string `env:"APP_DB_SSLMODE" default:"disable"`
+	Port     int    `env:"APP_DB_PORT" default:"5432"`
 }
 
 // DSN returns the PostgreSQL connection string.

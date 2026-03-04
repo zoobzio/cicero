@@ -107,11 +107,11 @@ func run() error {
 	// 6. Register Boundaries
 	// =========================================================================
 
-	if err := models.RegisterBoundaries(k); err != nil {
-		return fmt.Errorf("failed to register model boundaries: %w", err)
+	if boundaryErr := models.RegisterBoundaries(k); boundaryErr != nil {
+		return fmt.Errorf("failed to register model boundaries: %w", boundaryErr)
 	}
-	if err := wire.RegisterBoundaries(k); err != nil {
-		return fmt.Errorf("failed to register wire boundaries: %w", err)
+	if boundaryErr := wire.RegisterBoundaries(k); boundaryErr != nil {
+		return fmt.Errorf("failed to register wire boundaries: %w", boundaryErr)
 	}
 
 	// =========================================================================

@@ -8,6 +8,9 @@ import "github.com/zoobzio/cicero/models"
 // Job is the pipeline carrier. It flows through every stage, accumulating
 // state as processing progresses.
 type Job struct {
+	// Dedup — set by the deduplicate stage if a cached translation exists.
+	Existing *models.Translation
+
 	// Input — set by the caller before pipeline execution.
 	SourceText string
 	SourceLang string
@@ -16,15 +19,10 @@ type Job struct {
 
 	// Computed — populated by pipeline stages.
 	Hash           string
-	Classification models.Classification
-
-	// Output — populated by translate and store stages.
 	TranslatedText string
 	Provider       string
 	Status         string
-
-	// Dedup — set by the deduplicate stage if a cached translation exists.
-	Existing *models.Translation
+	Classification models.Classification
 }
 
 // Clone returns a deep copy of the job for parallel processing.

@@ -4,9 +4,12 @@ go 1.25.0
 
 toolchain go1.25.3
 
+replace github.com/zoobzio/cicero/proto => ./proto
+
 require (
 	github.com/zoobzio/aperture v0.1.0
 	github.com/zoobzio/capitan v1.0.0
+	github.com/zoobzio/cicero/proto v0.0.0
 	github.com/zoobzio/sum v0.0.7
 	go.opentelemetry.io/otel v1.38.0
 	go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploghttp v0.14.0
@@ -18,6 +21,7 @@ require (
 	go.opentelemetry.io/otel/sdk/log v0.14.0
 	go.opentelemetry.io/otel/sdk/metric v1.38.0
 	go.opentelemetry.io/otel/trace v1.38.0
+	google.golang.org/grpc v1.75.0
 )
 
 require (
@@ -26,20 +30,20 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.2 // indirect
-	github.com/jmoiron/sqlx v1.4.0 // indirect
-	github.com/lib/pq v1.11.2 // indirect
-	github.com/zoobzio/astql v1.0.6 // indirect
+	github.com/jmoiron/sqlx v1.4.0
+	github.com/lib/pq v1.11.2
+	github.com/zoobzio/astql v1.0.6
 	github.com/zoobzio/atom v1.0.0 // indirect
 	github.com/zoobzio/cereal v0.1.1 // indirect
-	github.com/zoobzio/check v0.0.4 // indirect
+	github.com/zoobzio/check v0.0.4
 	github.com/zoobzio/clockz v1.0.0 // indirect
 	github.com/zoobzio/dbml v1.0.0 // indirect
 	github.com/zoobzio/edamame v1.0.1 // indirect
 	github.com/zoobzio/fig v0.0.1 // indirect
-	github.com/zoobzio/grub v0.1.8 // indirect
+	github.com/zoobzio/grub v0.1.8
 	github.com/zoobzio/openapi v1.0.1 // indirect
-	github.com/zoobzio/pipz v1.0.4 // indirect
-	github.com/zoobzio/rocco v0.1.14 // indirect
+	github.com/zoobzio/pipz v1.0.4
+	github.com/zoobzio/rocco v0.1.14
 	github.com/zoobzio/scio v0.0.3 // indirect
 	github.com/zoobzio/sentinel v1.0.2 // indirect
 	github.com/zoobzio/slush v0.0.2 // indirect
@@ -55,7 +59,6 @@ require (
 	golang.org/x/text v0.34.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250825161204-c5933d9347a5 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250825161204-c5933d9347a5 // indirect
-	google.golang.org/grpc v1.75.0 // indirect
 	google.golang.org/protobuf v1.36.8 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
