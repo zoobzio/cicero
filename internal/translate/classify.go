@@ -3,8 +3,8 @@ package translate
 import (
 	"context"
 
-	"github.com/zoobzio/cicero/internal/classify"
-	"github.com/zoobzio/sum"
+	"github.com/zoobz-io/cicero/internal/classify"
+	"github.com/zoobz-io/sum"
 )
 
 // classifyStage runs the complexity classifier against the source text.

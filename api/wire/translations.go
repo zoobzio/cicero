@@ -1,7 +1,7 @@
 // Package wire provides request and response types for the public API.
 package wire
 
-import "github.com/zoobzio/check"
+import "github.com/zoobz-io/check"
 
 // TranslateRequest is the request body for submitting text for translation.
 type TranslateRequest struct {

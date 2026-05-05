@@ -1,4 +1,4 @@
-module github.com/zoobzio/cicero/proto
+module github.com/zoobz-io/cicero/proto
 
 go 1.25.0
 

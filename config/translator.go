@@ -1,6 +1,6 @@
 package config
 
-import "github.com/zoobzio/check"
+import "github.com/zoobz-io/check"
 
 // Translator holds configuration for the translator gRPC sidecar client.
 type Translator struct {

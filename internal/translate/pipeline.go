@@ -1,6 +1,6 @@
 package translate
 
-import "github.com/zoobzio/pipz"
+import "github.com/zoobz-io/pipz"
 
 // Pipeline identities for observability and debugging.
 var (

@@ -6,7 +6,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/zoobzio/cicero/models"
+	"github.com/zoobz-io/cicero/models"
 )
 
 func TestSimple_Classify_AlwaysReturnsRouteSimple(t *testing.T) {

@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/zoobzio/cicero/models"
+	"github.com/zoobz-io/cicero/models"
 )
 
 func TestSourceAndTranslationToResponse(t *testing.T) {

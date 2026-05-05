@@ -3,7 +3,7 @@ package contracts
 import (
 	"context"
 
-	"github.com/zoobzio/cicero/models"
+	"github.com/zoobz-io/cicero/models"
 )
 
 // Translator defines the contract for external translation provider calls.

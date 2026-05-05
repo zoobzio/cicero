@@ -6,7 +6,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 
-	pb "github.com/zoobzio/cicero/proto/translator"
+	pb "github.com/zoobz-io/cicero/proto/translator"
 )
 
 // Compile-time assertion: generated server interface is satisfied by the unimplemented base.

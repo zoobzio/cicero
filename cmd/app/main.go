@@ -10,23 +10,23 @@ import (
 	_ "github.com/lib/pq"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/zoobzio/aperture"
-	"github.com/zoobzio/astql/postgres"
-	"github.com/zoobzio/capitan"
-	"github.com/zoobzio/pipz"
-	"github.com/zoobzio/sum"
+	"github.com/zoobz-io/aperture"
+	"github.com/zoobz-io/astql/postgres"
+	"github.com/zoobz-io/capitan"
+	"github.com/zoobz-io/pipz"
+	"github.com/zoobz-io/sum"
 
-	"github.com/zoobzio/cicero/api/contracts"
-	"github.com/zoobzio/cicero/api/handlers"
-	"github.com/zoobzio/cicero/api/wire"
-	"github.com/zoobzio/cicero/config"
-	"github.com/zoobzio/cicero/events"
-	extranslator "github.com/zoobzio/cicero/external/translator"
-	intotel "github.com/zoobzio/cicero/internal/otel"
-	"github.com/zoobzio/cicero/internal/classify"
-	"github.com/zoobzio/cicero/internal/translate"
-	"github.com/zoobzio/cicero/models"
-	"github.com/zoobzio/cicero/stores"
+	"github.com/zoobz-io/cicero/api/contracts"
+	"github.com/zoobz-io/cicero/api/handlers"
+	"github.com/zoobz-io/cicero/api/wire"
+	"github.com/zoobz-io/cicero/config"
+	"github.com/zoobz-io/cicero/events"
+	extranslator "github.com/zoobz-io/cicero/external/translator"
+	intotel "github.com/zoobz-io/cicero/internal/otel"
+	"github.com/zoobz-io/cicero/internal/classify"
+	"github.com/zoobz-io/cicero/internal/translate"
+	"github.com/zoobz-io/cicero/models"
+	"github.com/zoobz-io/cicero/stores"
 )
 
 func main() {
@@ -75,10 +75,7 @@ func run() error {
 	// =========================================================================
 
 	renderer := postgres.New()
-	allStores, err := stores.New(db, renderer)
-	if err != nil {
-		return fmt.Errorf("failed to create stores: %w", err)
-	}
+	allStores := stores.New(db, renderer)
 
 	// =========================================================================
 	// 4. Create Clients and Services

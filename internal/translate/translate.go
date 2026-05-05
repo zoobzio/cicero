@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/zoobzio/cicero/api/contracts"
-	"github.com/zoobzio/sum"
+	"github.com/zoobz-io/cicero/api/contracts"
+	"github.com/zoobz-io/sum"
 )
 
 // translateStage calls the translation provider to produce the translated text.

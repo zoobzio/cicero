@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/zoobzio/cicero/internal/classify"
-	"github.com/zoobzio/cicero/models"
-	"github.com/zoobzio/sum"
+	"github.com/zoobz-io/cicero/internal/classify"
+	"github.com/zoobz-io/cicero/models"
+	"github.com/zoobz-io/sum"
 )
 
 func TestClassifyStage_SetsClassification(t *testing.T) {

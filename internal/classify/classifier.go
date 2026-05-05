@@ -4,7 +4,7 @@ package classify
 import (
 	"context"
 
-	"github.com/zoobzio/cicero/models"
+	"github.com/zoobz-io/cicero/models"
 )
 
 // Classifier determines how text should be routed for translation.

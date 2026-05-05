@@ -3,7 +3,7 @@ package contracts
 import (
 	"context"
 
-	"github.com/zoobzio/cicero/models"
+	"github.com/zoobz-io/cicero/models"
 )
 
 // Translations defines the contract for translation storage operations.

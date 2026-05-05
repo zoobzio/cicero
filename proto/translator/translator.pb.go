@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.6
 // 	protoc        v6.33.1
-// source: translator/translator.proto
+// source: proto/translator/translator.proto
 
 package translator
 
@@ -34,7 +34,7 @@ type TranslateRequest struct {
 
 func (x *TranslateRequest) Reset() {
 	*x = TranslateRequest{}
-	mi := &file_translator_translator_proto_msgTypes[0]
+	mi := &file_proto_translator_translator_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -46,7 +46,7 @@ func (x *TranslateRequest) String() string {
 func (*TranslateRequest) ProtoMessage() {}
 
 func (x *TranslateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_translator_translator_proto_msgTypes[0]
+	mi := &file_proto_translator_translator_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -59,7 +59,7 @@ func (x *TranslateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TranslateRequest.ProtoReflect.Descriptor instead.
 func (*TranslateRequest) Descriptor() ([]byte, []int) {
-	return file_translator_translator_proto_rawDescGZIP(), []int{0}
+	return file_proto_translator_translator_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *TranslateRequest) GetText() string {
@@ -101,7 +101,7 @@ type TranslateResponse struct {
 
 func (x *TranslateResponse) Reset() {
 	*x = TranslateResponse{}
-	mi := &file_translator_translator_proto_msgTypes[1]
+	mi := &file_proto_translator_translator_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -113,7 +113,7 @@ func (x *TranslateResponse) String() string {
 func (*TranslateResponse) ProtoMessage() {}
 
 func (x *TranslateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_translator_translator_proto_msgTypes[1]
+	mi := &file_proto_translator_translator_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -126,7 +126,7 @@ func (x *TranslateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TranslateResponse.ProtoReflect.Descriptor instead.
 func (*TranslateResponse) Descriptor() ([]byte, []int) {
-	return file_translator_translator_proto_rawDescGZIP(), []int{1}
+	return file_proto_translator_translator_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *TranslateResponse) GetTranslatedText() string {
@@ -143,11 +143,11 @@ func (x *TranslateResponse) GetProvider() string {
 	return ""
 }
 
-var File_translator_translator_proto protoreflect.FileDescriptor
+var File_proto_translator_translator_proto protoreflect.FileDescriptor
 
-const file_translator_translator_proto_rawDesc = "" +
+const file_proto_translator_translator_proto_rawDesc = "" +
 	"\n" +
-	"\x1btranslator/translator.proto\x12\n" +
+	"!proto/translator/translator.proto\x12\n" +
 	"translator\"\x8e\x01\n" +
 	"\x10TranslateRequest\x12\x12\n" +
 	"\x04text\x18\x01 \x01(\tR\x04text\x12'\n" +
@@ -158,26 +158,26 @@ const file_translator_translator_proto_rawDesc = "" +
 	"\x0ftranslated_text\x18\x01 \x01(\tR\x0etranslatedText\x12\x1a\n" +
 	"\bprovider\x18\x02 \x01(\tR\bprovider2]\n" +
 	"\x11TranslatorService\x12H\n" +
-	"\tTranslate\x12\x1c.translator.TranslateRequest\x1a\x1d.translator.TranslateResponseB,Z*github.com/zoobzio/cicero/proto/translatorb\x06proto3"
+	"\tTranslate\x12\x1c.translator.TranslateRequest\x1a\x1d.translator.TranslateResponseB-Z+github.com/zoobz-io/cicero/proto/translatorb\x06proto3"
 
 var (
-	file_translator_translator_proto_rawDescOnce sync.Once
-	file_translator_translator_proto_rawDescData []byte
+	file_proto_translator_translator_proto_rawDescOnce sync.Once
+	file_proto_translator_translator_proto_rawDescData []byte
 )
 
-func file_translator_translator_proto_rawDescGZIP() []byte {
-	file_translator_translator_proto_rawDescOnce.Do(func() {
-		file_translator_translator_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_translator_translator_proto_rawDesc), len(file_translator_translator_proto_rawDesc)))
+func file_proto_translator_translator_proto_rawDescGZIP() []byte {
+	file_proto_translator_translator_proto_rawDescOnce.Do(func() {
+		file_proto_translator_translator_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_translator_translator_proto_rawDesc), len(file_proto_translator_translator_proto_rawDesc)))
 	})
-	return file_translator_translator_proto_rawDescData
+	return file_proto_translator_translator_proto_rawDescData
 }
 
-var file_translator_translator_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_translator_translator_proto_goTypes = []any{
+var file_proto_translator_translator_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_proto_translator_translator_proto_goTypes = []any{
 	(*TranslateRequest)(nil),  // 0: translator.TranslateRequest
 	(*TranslateResponse)(nil), // 1: translator.TranslateResponse
 }
-var file_translator_translator_proto_depIdxs = []int32{
+var file_proto_translator_translator_proto_depIdxs = []int32{
 	0, // 0: translator.TranslatorService.Translate:input_type -> translator.TranslateRequest
 	1, // 1: translator.TranslatorService.Translate:output_type -> translator.TranslateResponse
 	1, // [1:2] is the sub-list for method output_type
@@ -187,26 +187,26 @@ var file_translator_translator_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_translator_translator_proto_init() }
-func file_translator_translator_proto_init() {
-	if File_translator_translator_proto != nil {
+func init() { file_proto_translator_translator_proto_init() }
+func file_proto_translator_translator_proto_init() {
+	if File_proto_translator_translator_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_translator_translator_proto_rawDesc), len(file_translator_translator_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_translator_translator_proto_rawDesc), len(file_proto_translator_translator_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_translator_translator_proto_goTypes,
-		DependencyIndexes: file_translator_translator_proto_depIdxs,
-		MessageInfos:      file_translator_translator_proto_msgTypes,
+		GoTypes:           file_proto_translator_translator_proto_goTypes,
+		DependencyIndexes: file_proto_translator_translator_proto_depIdxs,
+		MessageInfos:      file_proto_translator_translator_proto_msgTypes,
 	}.Build()
-	File_translator_translator_proto = out.File
-	file_translator_translator_proto_goTypes = nil
-	file_translator_translator_proto_depIdxs = nil
+	File_proto_translator_translator_proto = out.File
+	file_proto_translator_translator_proto_goTypes = nil
+	file_proto_translator_translator_proto_depIdxs = nil
 }

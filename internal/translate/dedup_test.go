@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/zoobzio/cicero/api/contracts"
-	"github.com/zoobzio/cicero/models"
-	"github.com/zoobzio/grub"
-	"github.com/zoobzio/sum"
+	"github.com/zoobz-io/cicero/api/contracts"
+	"github.com/zoobz-io/cicero/models"
+	"github.com/zoobz-io/grub"
+	"github.com/zoobz-io/sum"
 )
 
 func TestDedupStage_ExistingTranslation(t *testing.T) {

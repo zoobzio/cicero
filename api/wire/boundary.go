@@ -1,6 +1,6 @@
 package wire
 
-import "github.com/zoobzio/sum"
+import "github.com/zoobz-io/sum"
 
 // RegisterBoundaries registers wire boundary processors with the service registry.
 // No wire boundaries are required in the current implementation — public API wire

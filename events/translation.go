@@ -1,8 +1,8 @@
 package events
 
 import (
-	"github.com/zoobzio/capitan"
-	"github.com/zoobzio/sum"
+	"github.com/zoobz-io/capitan"
+	"github.com/zoobz-io/sum"
 )
 
 // Translation signals for domain lifecycle.

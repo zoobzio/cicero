@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/zoobzio/cicero/api/contracts"
-	"github.com/zoobzio/cicero/models"
-	"github.com/zoobzio/sum"
+	"github.com/zoobz-io/cicero/api/contracts"
+	"github.com/zoobz-io/cicero/models"
+	"github.com/zoobz-io/sum"
 )
 
 // storeStage persists the source text and translation records to the database.

@@ -7,8 +7,8 @@ import (
 	"net"
 	"os"
 
-	pb "github.com/zoobzio/cicero/proto/translator"
-	"github.com/zoobzio/cicero/translator"
+	pb "github.com/zoobz-io/cicero/proto/translator"
+	"github.com/zoobz-io/cicero/translator"
 	"google.golang.org/grpc"
 )
 

@@ -10,14 +10,14 @@ import (
 	"testing"
 	"time"
 
-	pb "github.com/zoobzio/cicero/proto/translator"
+	pb "github.com/zoobz-io/cicero/proto/translator"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 	"google.golang.org/grpc/test/bufconn"
 
-	. "github.com/zoobzio/cicero/translator"
+	. "github.com/zoobz-io/cicero/translator"
 )
 
 const bufSize = 1024 * 1024

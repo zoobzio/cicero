@@ -1,6 +1,6 @@
 package handlers
 
-import "github.com/zoobzio/rocco"
+import "github.com/zoobz-io/rocco"
 
 // All returns all public API handlers for registration with the router.
 func All() []rocco.Endpoint {

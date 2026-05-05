@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 
-	"github.com/zoobzio/check"
+	"github.com/zoobz-io/check"
 )
 
 // Database holds PostgreSQL connection configuration.

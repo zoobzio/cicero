@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/zoobzio/cicero/models"
+	"github.com/zoobz-io/cicero/models"
 )
 
 // NewSource returns a Source with sensible defaults.

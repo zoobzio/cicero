@@ -1,7 +1,7 @@
 // Package handlers provides HTTP handlers for the public API.
 package handlers
 
-import "github.com/zoobzio/rocco"
+import "github.com/zoobz-io/rocco"
 
 // Domain errors for the public API.
 var (

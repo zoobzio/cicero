@@ -1,11 +1,11 @@
-module github.com/zoobzio/cicero/translator
+module github.com/zoobz-io/cicero/translator
 
 go 1.25.0
 
-replace github.com/zoobzio/cicero/proto => ../../proto
+replace github.com/zoobz-io/cicero/proto => ../../proto
 
 require (
-	github.com/zoobzio/cicero/proto v0.0.0-00010101000000-000000000000
+	github.com/zoobz-io/cicero/proto v0.0.0-00010101000000-000000000000
 	google.golang.org/grpc v1.79.1
 )
 

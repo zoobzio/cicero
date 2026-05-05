@@ -6,9 +6,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/zoobzio/cicero/api/contracts"
-	"github.com/zoobzio/cicero/models"
-	cicerotest "github.com/zoobzio/cicero/testing"
+	"github.com/zoobz-io/cicero/api/contracts"
+	"github.com/zoobz-io/cicero/models"
+	cicerotest "github.com/zoobz-io/cicero/testing"
 )
 
 // Compile-time assertion: MockTranslator satisfies the updated Translator interface.

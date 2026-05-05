@@ -1,7 +1,7 @@
 // Package config provides configuration types for cicero.
 package config
 
-import "github.com/zoobzio/check"
+import "github.com/zoobz-io/check"
 
 // App holds application server configuration.
 type App struct {

@@ -5,11 +5,11 @@ package testing
 import (
 	"context"
 
-	"github.com/zoobzio/cicero/api/contracts"
-	"github.com/zoobzio/cicero/internal/classify"
-	"github.com/zoobzio/cicero/internal/translate"
-	"github.com/zoobzio/cicero/models"
-	"github.com/zoobzio/pipz"
+	"github.com/zoobz-io/cicero/api/contracts"
+	"github.com/zoobz-io/cicero/internal/classify"
+	"github.com/zoobz-io/cicero/internal/translate"
+	"github.com/zoobz-io/cicero/models"
+	"github.com/zoobz-io/pipz"
 )
 
 // Compile-time assertions: mocks satisfy their contracts.

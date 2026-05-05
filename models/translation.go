@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/zoobzio/check"
+	"github.com/zoobz-io/check"
 )
 
 // Translation represents a per-language translation of a source text.

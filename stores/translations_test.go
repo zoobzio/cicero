@@ -5,7 +5,7 @@ package stores
 import (
 	"testing"
 
-	"github.com/zoobzio/cicero/api/contracts"
+	"github.com/zoobz-io/cicero/api/contracts"
 )
 
 // Compile-time assertion: Translations satisfies contracts.Translations.

@@ -2,7 +2,7 @@ package stores
 
 import (
 	"github.com/jmoiron/sqlx"
-	"github.com/zoobzio/astql"
+	"github.com/zoobz-io/astql"
 )
 
 // Stores aggregates all data access implementations.
@@ -12,19 +12,9 @@ type Stores struct {
 }
 
 // New creates all stores and returns the aggregate.
-func New(db *sqlx.DB, renderer astql.Renderer) (*Stores, error) {
-	sources, err := NewSources(db, renderer)
-	if err != nil {
-		return nil, err
-	}
-
-	translations, err := NewTranslations(db, renderer)
-	if err != nil {
-		return nil, err
-	}
-
+func New(db *sqlx.DB, renderer astql.Renderer) *Stores {
 	return &Stores{
-		Sources:      sources,
-		Translations: translations,
-	}, nil
+		Sources:      NewSources(db, renderer),
+		Translations: NewTranslations(db, renderer),
+	}
 }

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package translator;
 
-option go_package = "github.com/zoobzio/cicero/proto/translator";
+option go_package = "github.com/zoobz-io/cicero/proto/translator";
 
 // TranslatorService provides text translation via the sidecar.
 service TranslatorService {

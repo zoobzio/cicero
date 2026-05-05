@@ -5,7 +5,7 @@ package translate
 import (
 	"context"
 
-	"github.com/zoobzio/cicero/models"
+	"github.com/zoobz-io/cicero/models"
 )
 
 // mockSources is a local minimal mock for contracts.Sources.

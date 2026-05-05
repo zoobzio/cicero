@@ -9,13 +9,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/zoobzio/cicero/api/contracts"
-	"github.com/zoobzio/cicero/internal/translate"
-	"github.com/zoobzio/cicero/models"
-	cicerotest "github.com/zoobzio/cicero/testing"
-	"github.com/zoobzio/pipz"
-	roccotest "github.com/zoobzio/rocco/testing"
-	"github.com/zoobzio/sum"
+	"github.com/zoobz-io/cicero/api/contracts"
+	"github.com/zoobz-io/cicero/internal/translate"
+	"github.com/zoobz-io/cicero/models"
+	cicerotest "github.com/zoobz-io/cicero/testing"
+	"github.com/zoobz-io/pipz"
+	roccotest "github.com/zoobz-io/rocco/testing"
+	"github.com/zoobz-io/sum"
 )
 
 func TestCreateTranslation_Success(t *testing.T) {

@@ -3,7 +3,7 @@
 // hash, deduplicate, classify, translate, and store.
 package translate
 
-import "github.com/zoobzio/cicero/models"
+import "github.com/zoobz-io/cicero/models"
 
 // Job is the pipeline carrier. It flows through every stage, accumulating
 // state as processing progresses.

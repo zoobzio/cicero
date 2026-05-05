@@ -4,7 +4,7 @@ package models
 import (
 	"time"
 
-	"github.com/zoobzio/check"
+	"github.com/zoobz-io/check"
 )
 
 // Source represents content-addressable source text.

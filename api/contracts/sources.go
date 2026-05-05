@@ -4,7 +4,7 @@ package contracts
 import (
 	"context"
 
-	"github.com/zoobzio/cicero/models"
+	"github.com/zoobz-io/cicero/models"
 )
 
 // Sources defines the contract for source text storage operations.

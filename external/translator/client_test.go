@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/zoobzio/cicero/api/contracts"
-	"github.com/zoobzio/cicero/models"
-	pb "github.com/zoobzio/cicero/proto/translator"
+	"github.com/zoobz-io/cicero/api/contracts"
+	"github.com/zoobz-io/cicero/models"
+	pb "github.com/zoobz-io/cicero/proto/translator"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"

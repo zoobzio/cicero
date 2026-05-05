@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/zoobzio/astql"
-	"github.com/zoobzio/sum"
-	"github.com/zoobzio/cicero/models"
+	"github.com/zoobz-io/astql"
+	"github.com/zoobz-io/sum"
+	"github.com/zoobz-io/cicero/models"
 )
 
 // Translations provides database access for translation records.
@@ -15,12 +15,8 @@ type Translations struct {
 }
 
 // NewTranslations creates a new translations store.
-func NewTranslations(db *sqlx.DB, renderer astql.Renderer) (*Translations, error) {
-	database, err := sum.NewDatabase[models.Translation](db, "translations", renderer)
-	if err != nil {
-		return nil, err
-	}
-	return &Translations{Database: database}, nil
+func NewTranslations(db *sqlx.DB, renderer astql.Renderer) *Translations {
+	return &Translations{Database: sum.NewDatabase[models.Translation](db, "translations", renderer)}
 }
 
 // GetBySourceAndLang retrieves a translation by source hash and language pair.

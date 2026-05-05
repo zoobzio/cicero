@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v6.33.1
-// source: translator/translator.proto
+// source: proto/translator/translator.proto
 
 package translator
 
@@ -123,5 +123,5 @@ var TranslatorService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "translator/translator.proto",
+	Metadata: "proto/translator/translator.proto",
 }

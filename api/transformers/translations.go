@@ -2,8 +2,8 @@
 package transformers
 
 import (
-	"github.com/zoobzio/cicero/api/wire"
-	"github.com/zoobzio/cicero/models"
+	"github.com/zoobz-io/cicero/api/wire"
+	"github.com/zoobz-io/cicero/models"
 )
 
 // SourceAndTranslationToResponse maps a source and translation model to a TranslateResponse.

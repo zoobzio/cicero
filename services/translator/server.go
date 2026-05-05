@@ -8,7 +8,7 @@ import (
 	"log"
 	"net/http"
 
-	pb "github.com/zoobzio/cicero/proto/translator"
+	pb "github.com/zoobz-io/cicero/proto/translator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

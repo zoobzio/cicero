@@ -3,9 +3,9 @@ package stores
 
 import (
 	"github.com/jmoiron/sqlx"
-	"github.com/zoobzio/astql"
-	"github.com/zoobzio/sum"
-	"github.com/zoobzio/cicero/models"
+	"github.com/zoobz-io/astql"
+	"github.com/zoobz-io/sum"
+	"github.com/zoobz-io/cicero/models"
 )
 
 // Sources provides database access for source text records.
@@ -15,10 +15,6 @@ type Sources struct {
 }
 
 // NewSources creates a new sources store.
-func NewSources(db *sqlx.DB, renderer astql.Renderer) (*Sources, error) {
-	database, err := sum.NewDatabase[models.Source](db, "sources", renderer)
-	if err != nil {
-		return nil, err
-	}
-	return &Sources{Database: database}, nil
+func NewSources(db *sqlx.DB, renderer astql.Renderer) *Sources {
+	return &Sources{Database: sum.NewDatabase[models.Source](db, "sources", renderer)}
 }

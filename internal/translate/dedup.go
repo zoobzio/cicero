@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	"github.com/zoobzio/cicero/api/contracts"
-	"github.com/zoobzio/grub"
-	"github.com/zoobzio/sum"
+	"github.com/zoobz-io/cicero/api/contracts"
+	"github.com/zoobz-io/grub"
+	"github.com/zoobz-io/sum"
 )
 
 // deduplicateStage checks whether a translation already exists for the

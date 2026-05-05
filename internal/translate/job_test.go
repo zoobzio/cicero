@@ -5,7 +5,7 @@ package translate
 import (
 	"testing"
 
-	"github.com/zoobzio/cicero/models"
+	"github.com/zoobz-io/cicero/models"
 )
 
 func TestJob_Clone_Independence(t *testing.T) {

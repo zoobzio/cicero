@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/zoobzio/cicero/api/contracts"
-	"github.com/zoobzio/cicero/internal/classify"
-	"github.com/zoobzio/cicero/models"
-	"github.com/zoobzio/sum"
+	"github.com/zoobz-io/cicero/api/contracts"
+	"github.com/zoobz-io/cicero/internal/classify"
+	"github.com/zoobz-io/cicero/models"
+	"github.com/zoobz-io/sum"
 )
 
 func setupPipelineContext(t *testing.T, ms contracts.Sources, mt contracts.Translations, mtr contracts.Translator, mc classify.Classifier) context.Context {

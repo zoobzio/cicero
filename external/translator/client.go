@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/zoobzio/cicero/models"
-	pb "github.com/zoobzio/cicero/proto/translator"
-	"github.com/zoobzio/pipz"
+	"github.com/zoobz-io/cicero/models"
+	pb "github.com/zoobz-io/cicero/proto/translator"
+	"github.com/zoobz-io/pipz"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

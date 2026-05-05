@@ -7,11 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/zoobzio/cicero/api/contracts"
-	"github.com/zoobzio/cicero/internal/classify"
-	"github.com/zoobzio/cicero/internal/translate"
-	"github.com/zoobzio/pipz"
-	"github.com/zoobzio/sum"
+	"github.com/zoobz-io/cicero/api/contracts"
+	"github.com/zoobz-io/cicero/internal/classify"
+	"github.com/zoobz-io/cicero/internal/translate"
+	"github.com/zoobz-io/pipz"
+	"github.com/zoobz-io/sum"
 )
 
 // RegistryOption configures a test registry.
